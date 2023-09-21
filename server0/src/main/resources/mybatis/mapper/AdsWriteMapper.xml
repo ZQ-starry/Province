@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sx.server0.dao.process.AdsWriteDao">
+
+    <select id="getSimOperate" resultType="com.sx.server0.entity.res.SimOperateEntity">
+        SELECT * FROM sim_operate WHERE id = 1
+    </select>
+
+    <select id="getSimStatus" resultType="int">
+        SELECT status FROM sim_operate WHERE id=1
+    </select>
+
+    <update id="setSimStatus" parameterType="int">
+        UPDATE sim_operate SET status = #{status} WHERE id=1
+    </update>
+
+    <select id="getButtonStatus" resultType="int">
+        SELECT status FROM sim_operate WHERE id=1
+    </select>
+
+    <select id="getWriteCount" resultType="int">
+        SELECT count FROM write_status WHERE id=1
+    </select>
+
+    <select id="getInitialData" parameterType="int" resultType="com.sx.server0.entity.device.InitialDataEntity">
+        SELECT * FROM initial_data WHERE id = #{count}
+    </select>
+
+    <update id="setSimConfig" parameterType="float">
+        UPDATE sim_operate SET pv_capacity = #{pvCapacity} WHERE id=1
+    </update>
+</mapper>

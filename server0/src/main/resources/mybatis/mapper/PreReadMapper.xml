@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sx.server0.dao.read.PreReadDao">
+
+    <select id="getTableNames" resultType="string">
+        SELECT ${s} FROM tables_name WHERE ${s} IS NOT NULL
+    </select>
+
+    <select id="getNodeNumOfLine" resultType="string">
+        SELECT node_num FROM (SELECT * FROM ${s} WHERE node_variable = #{nodeVariable}
+        ORDER BY order_num) AS temp
+    </select>
+
+    <select id="getNodeNumOfNode" resultType="string">
+        SELECT node_num FROM (SELECT * FROM ${s} WHERE node_variable &lt;&gt; #{nodeVariable}
+        ORDER BY order_num) AS temp
+    </select>
+
+    <select id="getLineInfo" resultType="com.sx.server0.entity.data.PreLineInfoEntity">
+        SELECT node_num, node_name_start, node_name_end FROM
+        (SELECT * FROM ${s} WHERE node_variable = #{nodeVariable} ORDER BY order_num) AS temp
+    </select>
+
+    <select id="getNodeInfo" resultType="com.sx.server0.entity.data.PreNodeInfoEntity">
+        SELECT node_num, node_name_start, node_vol_level FROM
+        (SELECT * FROM ${s} WHERE node_variable &lt;&gt; #{nodeVariable}
+        ORDER BY order_num) AS temp
+    </select>
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sx.server0.dao.process.ProcessDao">
+
+    <select id="getLineRatedCurrent" resultType="float">
+        SELECT rated_capacity FROM ${lineRatedName} ORDER BY id ASC
+    </select>
+
+    <select id="getNodeRatedCapacity" resultType="float">
+        SELECT rated_capacity FROM ${nodeRatedName} ORDER BY id ASC
+    </select>
+
+    <update id="updateLineLoadRatio" parameterType="java.util.List">
+        <foreach collection="updateList" item="entity" separator=";">
+            UPDATE load_rate_line
+            <set>
+                load_rate=#{entity.loadRate}
+            </set>
+            <where>
+                node_num=#{entity.nodeNum}
+            </where>
+        </foreach>
+    </update>
+
+    <update id="updateNodeLoadRatio" parameterType="java.util.List">
+        <foreach collection="updateList" item="entity" separator=";">
+            UPDATE load_rate_node
+            <set>
+                load_rate=#{entity.loadRate}
+            </set>
+            <where>
+                node_num=#{entity.nodeNum}
+            </where>
+        </foreach>
+    </update>
+
+    <select id="selectLineData" resultType="com.sx.server0.entity.result.LineResultEntity">
+        select * from ${tableName} ORDER BY id LIMIT 1
+    </select>
+
+    <insert id="insertLineResult" useGeneratedKeys="true" >
+        INSERT INTO ${tableName}(current1_a,power_active1,power_reactive1,
+                                 current2_a,power_active2,power_reactive2,
+                                 current3_a,power_active3,power_reactive3,
+                                 current4_a,power_active4,power_reactive4,
+                                 current5_a,power_active5,power_reactive5,
+                                 current6_a,power_active6,power_reactive6,
+                                 current7_a,power_active7,power_reactive7,
+                                 current8_a,power_active8,power_reactive8,
+                                 current9_a,power_active9,power_reactive9,
+                                 current10_a,power_active10,power_reactive10,
+                                 current11_a,power_active11,power_reactive11,
+                                 current12_a,power_active12,power_reactive12,
+                                 current13_a,power_active13,power_reactive13,
+                                 current14_a,power_active14,power_reactive14,
+                                 current15_a,power_active15,power_reactive15
+                                 )
+        VALUES (#{line.current1A},#{line.powerActive1},#{line.powerReactive1},
+                #{line.current2A},#{line.powerActive2},#{line.powerReactive2},
+                #{line.current3A},#{line.powerActive3},#{line.powerReactive3},
+                #{line.current4A},#{line.powerActive4},#{line.powerReactive4},
+                #{line.current5A},#{line.powerActive5},#{line.powerReactive5},
+                #{line.current6A},#{line.powerActive6},#{line.powerReactive6},
+                #{line.current7A},#{line.powerActive7},#{line.powerReactive7},
+                #{line.current8A},#{line.powerActive8},#{line.powerReactive8},
+                #{line.current9A},#{line.powerActive9},#{line.powerReactive9},
+                #{line.current10A},#{line.powerActive10},#{line.powerReactive10},
+                #{line.current11A},#{line.powerActive11},#{line.powerReactive11},
+                #{line.current12A},#{line.powerActive12},#{line.powerReactive12},
+                #{line.current13A},#{line.powerActive13},#{line.powerReactive13},
+                #{line.current14A},#{line.powerActive14},#{line.powerReactive14},
+                #{line.current15A},#{line.powerActive15},#{line.powerReactive15}
+                )
+    </insert>
+
+    <insert id="insertNodeResult" useGeneratedKeys="true" >
+        INSERT INTO ${tableName}(voltage1_a, voltage2_a, voltage3_a, voltage4_a,
+                                 voltage5_a, voltage6_a, voltage7_a, voltage8_a,
+                                 voltage9_a, voltage10_a,voltage11_a, voltage12_a,
+                                 voltage13_a, voltage14_a, voltage15_a)
+                 VALUES (#{node.voltage1A}, #{node.voltage2A}, #{node.voltage3A}, #{node.voltage4A},
+                   #{node.voltage5A}, #{node.voltage6A}, #{node.voltage7A}, #{node.voltage8A},
+                   #{node.voltage9A}, #{node.voltage10A}, #{node.voltage11A}, #{node.voltage12A},
+                   #{node.voltage13A}, #{node.voltage14A}, #{node.voltage15A})
+    </insert>
+
+    <insert id="insertTime" useGeneratedKeys="true" >
+        INSERT INTO time_axis SET time = #{time}
+    </insert>
+
+    <select id="getReadStatus" resultType="int">
+        SELECT numbers FROM read_status WHERE id = #{id}
+    </select>
+
+    <update id="updateReadStatus" parameterType="int">
+        UPDATE read_status SET numbers=numbers+1 WHERE id = #{id}
+    </update>
+
+    <insert id="insertLineLoadRatio" parameterType="com.sx.server0.entity.res.LoadRateEntity" useGeneratedKeys="true">
+        insert into faults_load_rate_line (time,load_rate,node_num,node_name_start,node_name_end) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.time},
+            #{item.loadRate},
+            #{item.nodeNum},
+            #{item.nodeNameStart},
+            #{item.nodeNameEnd}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertNodeLoadRatio" parameterType="com.sx.server0.entity.res.LoadRateEntity" useGeneratedKeys="true">
+        insert into faults_load_rate_node (time,load_rate,node_num,node_name_start) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.time},
+            #{item.loadRate},
+            #{item.nodeNum},
+            #{item.nodeNameStart}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertFreq" useGeneratedKeys="true">
+        insert into monitor_freq (time,freq) values (#{time},#{gridFreq})
+    </insert>
+</mapper>

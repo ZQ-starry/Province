@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sx.server0.dao.read.DataReadDao">
+
+    <select id="getLineCtAndP" parameterType="com.sx.server0.entity.req.NodeInfoEntity" resultType="com.sx.server0.entity.res.LineCtAndPResEntity">
+        SELECT id,
+            ${nodeColumnName1} AS currentA,
+            ${nodeColumnName2} AS powerActive,
+            ${nodeColumnName3} AS powerReactive
+        FROM ${nodeTableName} ORDER BY id DESC LIMIT 40
+    </select>
+
+    <select id="getSsVoltage" parameterType="com.sx.server0.entity.req.NodeInfoEntity"
+            resultType="com.sx.server0.entity.res.SsVolResEntity">
+        SELECT id,
+            ${nodeColumnName1} AS voltageA
+        FROM ${nodeTableName} ORDER BY id DESC LIMIT 40
+    </select>
+
+    <insert id="insertVolFault" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO faults_vol_node (time, node_num,ndoe_name_start,node_vol_level,voltage_a) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.time},
+            #{item.nodeNum},
+            #{item.nodeNameStart},
+            #{item.nodeVolLevel},
+            #{item.voltageA}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertMinVol" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO min_vol_station (time,node_name_start,node_vol_level,voltage_a) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.time},
+            #{item.nodeNameStart},
+            #{item.nodeVolLevel},
+            #{item.voltageA}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getMinVolStation" parameterType="int" resultType="com.sx.server0.entity.res.VolMonitorEntity">
+        SELECT id AS id,
+            time AS time,
+            node_name_start AS nodeNameStart,
+            node_vol_level AS nodeVolLevel,
+            voltage_a AS voltageA
+        FROM min_vol_station
+        WHERE node_vol_level = #{volLevel}
+        ORDER BY id DESC LIMIT 20
+    </select>
+
+    <select id="getCurrentNumber" resultType="int">
+        SELECT MIN(numbers) countDev FROM read_status
+    </select>
+
+    <select id="getGridCapacity" resultType="com.sx.server0.entity.result.GridInfoEntity">
+        SELECT * FROM grid_capacity order by id
+    </select>
+
+    <select id="getInstallCapacity" resultType="com.sx.server0.entity.result.GridInfoEntity">
+        SELECT * FROM install_capacity order by id
+    </select>
+
+    <select id="getNodeInfoQueryByStation1" parameterType="string" resultType="com.sx.server0.entity.req.NodeInfoEntity">
+        SELECT * FROM node_info_all WHERE node_name_start LIKE concat('%',#{name},'%') AND node_variable &lt;&gt; '线路'
+    </select>
+
+    <select id="getNodeInfoQueryByLine1Start" parameterType="string" resultType="com.sx.server0.entity.req.NodeInfoEntity">
+        SELECT * FROM node_info_all WHERE node_name_start LIKE concat('%',#{name},'%') AND node_variable = '线路'
+    </select>
+
+    <select id="getNodeInfoQueryByLine1End" parameterType="string" resultType="com.sx.server0.entity.req.NodeInfoEntity">
+        SELECT * FROM node_info_all WHERE node_name_end LIKE concat('%',#{name},'%') AND node_variable = '线路'
+    </select>
+
+    <update id="setFaultsConfig" parameterType="com.sx.server0.entity.data.FaultsStandardEntity">
+        UPDATE faults_standard SET
+        node_fault_value = #{nodeFaultValue},
+        line_fault_value = #{lineFaultValue},
+        vol_fault_value_max1000 = #{volFaultValueMax1000},
+        vol_fault_value_min1000 = #{volFaultValueMin1000},
+        vol_fault_value_max500 = #{volFaultValueMax500},
+        vol_fault_value_min500 = #{volFaultValueMin500},
+        vol_fault_value_max220 = #{volFaultValueMax220},
+        vol_fault_value_min220 = #{volFaultValueMin220},
+        freq_fault_value_max = #{freqFaultValueMax},
+        freq_fault_value_min = #{freqFaultValueMin}
+        WHERE id = 1
+    </update>
+
+    <select id="getFaultsConfig" resultType="com.sx.server0.entity.data.FaultsStandardEntity">
+        SELECT * FROM faults_standard WHERE id=1
+    </select>
+</mapper>
